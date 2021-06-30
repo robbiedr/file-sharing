@@ -8,6 +8,7 @@ const FileController = require('src/components/file/FileController.js');
 const upload = require('src/utilities/multer.js');
 
 router.post('/', upload.single('file'), FileController.uploadFile);
+router.get('/', FileController.getFiles);
 router.get('/:publicKey', FileController.getFile);
 router.delete('/:privateKey', FileController.deleteFile);
 

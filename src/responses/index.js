@@ -4,6 +4,7 @@ const HttpError = require('src/responses/HttpError');
 const HttpSuccess = require('src/responses/HttpSuccess');
 const SystemError = require('src/responses/SystemError');
 const NotFoundError = require('src/responses/NotFoundError');
+const ValidationError = require('src/responses/ValidationError');
 
 /**
  * Respond to call
@@ -21,4 +22,5 @@ module.exports = {
   HttpSuccess,
   SystemError,
   NotFoundError,
+  ValidationError,
 };
