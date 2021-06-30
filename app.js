@@ -5,10 +5,13 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cron = require('node-cron');
 
 const FilesRouter = require('src/components/file/Files.js');
 
-const { PORT, MONGODB_URL } = process.env;
+const FileCheckerService =  require('src/components/file/checker/FileCheckerService.js');
+
+const { PORT, MONGODB_URL, CHECK_INACTIVITY_INTERVAL } = process.env;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -29,4 +32,9 @@ app.use('/files', FilesRouter);
 
 app.listen(PORT, () => {
     console.log('Listening to port ' + PORT);
+
+    cron.schedule(CHECK_INACTIVITY_INTERVAL, async () => {
+        console.log(`Checking for inactive files...`);
+        FileCheckerService.deleteInactiveFiles();
+    });
 });
