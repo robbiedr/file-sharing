@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cron = require('node-cron');
 
-const FilesRouter = require('src/components/file/Files.js');
+const FilesRouter = require('routes/Files.js');
 
 const FileCheckerService =  require('src/components/file/checker/FileCheckerService.js');
 

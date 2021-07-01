@@ -11,6 +11,12 @@ const {
     HttpSuccess,
 } = require('src/responses');
 
+/**
+ * Upload file to local storage and DB
+ * @param {object} req Request Object
+ * @param {object} res Response Object
+ * @param {object} next Next Function
+ */
 async function uploadFile(req, res, next) {
     console.log(TAG + '[uploadFile]');
 
@@ -26,6 +32,12 @@ async function uploadFile(req, res, next) {
     }
 }
 
+/**
+ * Get files from DB
+ * @param {object} req Request Object
+ * @param {object} res Response Object
+ * @param {object} next Next Function
+ */
 async function getFiles(req, res, next) {
     console.log(TAG + '[getFiles]');
 
@@ -38,6 +50,12 @@ async function getFiles(req, res, next) {
     }
 }
 
+/**
+ * Get file from local storage and DB
+ * @param {object} req Request Object
+ * @param {object} res Response Object
+ * @param {object} next Next Function
+ */
 async function getFile(req, res, next) {
     console.log(TAG + '[getFile]');
 
@@ -51,18 +69,27 @@ async function getFile(req, res, next) {
     try {
         const file = await FileService.getFile(publicKey);
 
-        const isWithinLimit = await DownloadService.isWithinLimit(file, ipAddress);
+        const validDownload = await DownloadService.validateDownload(file, ipAddress);
 
-        if (isWithinLimit) {
-            DownloadService.saveDownload(file, ipAddress);
+        if (validDownload) {
+            // DownloadService.saveDownload(file, ipAddress);
 
-            return res.status(200).download(file.path, file.name);
+            return res.status(200).download(file.path, file.name, () => {
+                console.log('Successfully downloaded!', publicKey);
+                DownloadService.saveDownload(file, ipAddress);
+            });
         }
     } catch (GetFileError) {
         return respond(res, GetFileError);
     }
 }
 
+/**
+ * Delete file from local storage and DB
+ * @param {object} req Request Object
+ * @param {object} res Response Object
+ * @param {object} next Next Function
+ */
 async function deleteFile(req, res, next) {
     console.log(TAG + '[deleteFile]');
 

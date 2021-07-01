@@ -18,13 +18,19 @@ const {
 
 const { FOLDER, INACTIVITY_PERIOD } = process.env;
 
-
+/**
+ * @module FileCheckerService
+ */
 class FileCheckerService {
-    deleteInactiveFiles() {
+    /**
+     * Delete all inactive files
+     */
+    async deleteInactiveFiles() {
         console.log(TAG + '[deleteInactiveFiles]');
 
         const files = fs.readdirSync(FOLDER);
 
+        let inactiveFiles = [];
         files.forEach((file) => {
             const path = FOLDER + '/' + file;
             const fileLastAccessedTime = fs.statSync(path).atime;
@@ -34,8 +40,17 @@ class FileCheckerService {
             if (Number(differenceInHours) >= Number(INACTIVITY_PERIOD)) {
                 console.log(file + ' deleted due to inactivity.');
                 fs.unlinkSync(path);
+
+                inactiveFiles.push(file);
+
+                // const deletedFile = await Files.findOneAndDelete({ name: file });
+
+                // console.log('deleted', deletedFile);
             }
         });
+
+        const deletedFiles = await Files.deleteMany({ name: { $in: inactiveFiles } });
+        console.log('deleted files', deletedFiles.deletedCount);
     }
 }
 
