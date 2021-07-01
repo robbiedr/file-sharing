@@ -18,7 +18,7 @@ const {
  * @param {object} next Next Function
  */
 async function uploadFile(req, res, next) {
-    console.log(TAG + '[uploadFile]');
+    console.log('['+ new Date() + '] ' + TAG + '[uploadFile]');
 
     const file = req.file;
     file.ipAddress = req.header('x-forwarded-for') || req.connection.remoteAddress;
@@ -39,7 +39,7 @@ async function uploadFile(req, res, next) {
  * @param {object} next Next Function
  */
 async function getFiles(req, res, next) {
-    console.log(TAG + '[getFiles]');
+    console.log('['+ new Date() + '] ' + TAG + '[getFiles]');
 
     try {
         const files = await FileService.getFiles();
@@ -57,14 +57,12 @@ async function getFiles(req, res, next) {
  * @param {object} next Next Function
  */
 async function getFile(req, res, next) {
-    console.log(TAG + '[getFile]');
+    console.log('['+ new Date() + '] ' + TAG + '[getFile]');
 
     const { publicKey } = req.params;
 
 
     const ipAddress = req.header('x-forwarded-for') || req.connection.remoteAddress;
-
-    console.log('123', ipAddress);
 
     try {
         const file = await FileService.getFile(publicKey);
@@ -75,7 +73,7 @@ async function getFile(req, res, next) {
             // DownloadService.saveDownload(file, ipAddress);
 
             return res.status(200).download(file.path, file.name, () => {
-                console.log('Successfully downloaded!', publicKey);
+                console.log('['+ new Date() + '] ' + 'Successfully downloaded!', publicKey);
                 DownloadService.saveDownload(file, ipAddress);
             });
         }
@@ -91,7 +89,7 @@ async function getFile(req, res, next) {
  * @param {object} next Next Function
  */
 async function deleteFile(req, res, next) {
-    console.log(TAG + '[deleteFile]');
+    console.log('['+ new Date() + '] ' + TAG + '[deleteFile]');
 
     const { privateKey } = req.params;
 

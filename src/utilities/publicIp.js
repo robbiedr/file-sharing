@@ -7,7 +7,7 @@ const publicIp = require('public-ip');
  * @return {string} Public IP Address
  */
 async function getPublicIpV4() {
-    console.log(TAG + '[getPublicIpV4]');
+    console.log('['+ new Date() + '] ' + TAG + '[getPublicIpV4]');
 
     return await publicIp.v4();
 }

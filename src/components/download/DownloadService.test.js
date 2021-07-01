@@ -12,7 +12,7 @@ const datesAreOnSameDay = (first, second) =>
 
 test('should return files today', () => {
     const downloadsToday = _getDownloadsToday();
-    console.log('today', downloadsToday);
+    console.log('['+ new Date() + '] ' + 'today', downloadsToday);
 
     const allToday = true;
     for (const download of downloadsToday) {

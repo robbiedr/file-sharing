@@ -34,7 +34,7 @@ class DownloadService {
      * @param {string} ipAddress IP Address
      */
     async saveDownload(file, ipAddress) {
-        console.log(TAG + '[saveDownload]');
+        console.log('['+ new Date() + '] ' + TAG + '[saveDownload]');
 
         ipAddress = ipAddress == '::1' ? await getPublicIpV4() : ipAddress;
 
@@ -54,40 +54,11 @@ class DownloadService {
                 size,
             });
 
-            console.log('Download detail saved');
+            console.log('['+ new Date() + '] ' + 'Download detail saved');
         } catch (DBError) {
-            console.log(DBError);
             throw new SystemError('Database Error');
         }
     }
-
-    // async isWithinLimit(file, ipAddress) {
-    //     console.log(TAG + '[isWithinLimit]');
-
-    //     let downloadsToday;
-    //     try {
-    //         const now = new Date();
-    //         const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    //         ipAddress = ipAddress == '::1' ? await getPublicIpV4() : ipAddress;
-    //         console.log('ip', ipAddress);
-
-    //         downloadsToday = await Downloads.find({ createdAt: { $gte: startOfToday }, ipAddress });
-
-    //         console.log('today', downloadsToday);
-    //     } catch (DBError) {
-    //         throw new SystemError('Database Error');
-    //     }
-
-    //     const totalSizeToday = _.sumBy(downloadsToday, 'size');
-
-    //     const _isWithinLimit = this._isWithinLimit((totalSizeToday + file.size), Number(DOWNLOAD_LIMIT));
-
-    //     if (!_isWithinLimit) {
-    //         throw new ValidationError('Exceeded daily download limit. Please try again tomorrow.');
-    //     }
-
-    //     return true;
-    // }
 
     /**
      * Validate Download to Daily Limit
@@ -98,7 +69,6 @@ class DownloadService {
     async validateDownload(file, ipAddress) {
         ipAddress = ipAddress == '::1' ? await getPublicIpV4() : ipAddress;
         const downloadsToday = await this._getDownloadsToday(ipAddress);
-        console.log(ipAddress, downloadsToday);
         const valid = validateFile(file, downloadsToday, Number(DOWNLOAD_LIMIT));
 
         if (!valid) {
@@ -114,20 +84,14 @@ class DownloadService {
      * @return {array} Downloads for Today
      */
     async _getDownloadsToday(ipAddress) {
-        console.log(new Date(), TAG + '[deleteInactiveFiles][' + ipAddress + ']');
+        console.log('['+ new Date() + '] ' + new Date(), TAG + '[deleteInactiveFiles][' + ipAddress + ']');
 
         let downloadsToday;
         try {
             const now = new Date();
-            console.log('now', now);
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             ipAddress = ipAddress == '::1' ? await getPublicIpV4() : ipAddress;
-            console.log('ip', ipAddress);
-            console.log(startOfToday);
-
             downloadsToday = await Downloads.find({ createdAt: { $gte: startOfToday }, ipAddress });
-
-            console.log('today', downloadsToday);
         } catch (DBError) {
             throw new SystemError('Database Error');
         }

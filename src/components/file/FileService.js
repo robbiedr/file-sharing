@@ -35,7 +35,7 @@ class FileService {
      * @return {object} Uploaded file
      */
     async uploadFile(file) {
-        console.log(TAG + '[uploadFile]');
+        console.log('['+ new Date() + '] ' + TAG + '[uploadFile]');
         
         file.size = Number(file.size) / 1000000;
         file.ipAddress = file.ipAddress == '::1' ? await getPublicIpV4() : file.ipAddress;
@@ -44,8 +44,6 @@ class FileService {
 
         if (valid) {
             const newFile = await this._saveFileDetail(file);
-
-            console.log(newFile);
     
             return newFile;
         }
@@ -56,7 +54,7 @@ class FileService {
      * @return {array} files stored in DB
      */
     async getFiles() {
-        console.log(TAG + '[getFiles]');
+        console.log('['+ new Date() + '] ' + TAG + '[getFiles]');
 
         let files;
         try {
@@ -74,13 +72,13 @@ class FileService {
      * @return {object} file retrieved
      */
     async getFile(publicKey) {
-        console.log(TAG + '[getFile]' + '[' + publicKey + ']');
+        console.log('['+ new Date() + '] ' + TAG + '[getFile]' + '[' + publicKey + ']');
 
         let file;
         try {
             file = await Files.findOne({ publicKey });
         } catch (DBError) {
-            console.log(DBError);
+            console.log('['+ new Date() + '] ' + DBError);
             throw new SystemError('Database error');
         }
 
@@ -97,7 +95,7 @@ class FileService {
      * @return {object} Deleted file
      */
     async deleteFile(privateKey) {
-        console.log(TAG + '[deleteFile]' + '[' + privateKey + ']');
+        console.log('['+ new Date() + '] ' + TAG + '[deleteFile]' + '[' + privateKey + ']');
 
         let file;
         try {
@@ -121,7 +119,7 @@ class FileService {
      * @return {object} Newly saved file
      */
     async _saveFileDetail(file) {
-        console.log(TAG + '[_saveFileDetail]');
+        console.log('['+ new Date() + '] ' + TAG + '[_saveFileDetail]');
 
         const publicKey = uuidv4();
         // const privateKey = await generateHash(uuidv4());
@@ -149,7 +147,7 @@ class FileService {
         try {
             await Files.create(newFile);
         } catch (DBError) {
-            console.log(DBError);
+            console.log('['+ new Date() + '] ' + DBError);
             throw new SystemError('Database error');
         }
 
@@ -167,6 +165,8 @@ class FileService {
         const valid = validateFile(file, uploadsToday, Number(UPLOAD_LIMIT));
 
         if (!valid) {
+            fs.unlinkSync(file.path);
+
             throw new ValidationError('Exceeded daily upload limit. Please try again tomorrow.');
         }
 
@@ -182,49 +182,16 @@ class FileService {
         let uploadsToday;
         try {
             const now = new Date();
-            console.log('now', now);
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             ipAddress = ipAddress == '::1' ? await getPublicIpV4() : ipAddress;
-            console.log('ip', ipAddress);
-            console.log(startOfToday);
 
             uploadsToday = await Files.find({ createdAt: { $gte: startOfToday }, ipAddress });
-
-            console.log('today', uploadsToday);
         } catch (DBError) {
             throw new SystemError('Database Error');
         }
 
         return uploadsToday;
     }
-
-    // async _isWithinLimit(file) {
-    //     console.log(TAG + '[_isWithinLimit]');
-
-    //     let uploadsToday;
-    //     try {
-    //         const now = new Date();
-    //         console.log('now', now);
-    //         const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    //         console.log('start', startOfToday);
-    //         file.ipAddress = file.ipAddress == '::1' ? await getPublicIpV4() : file.ipAddress;
-    //         console.log('ip', file.ipAddress);
-    //         uploadsToday = await Files.find({ createdAt: { $gte: startOfToday }, ipAddress: file.ipAddress });
-    //     } catch (DBError) {
-    //         console.log(DBError);
-    //         throw new SystemError('Database Error');
-    //     }
-
-    //     const totalSizeToday = _.sumBy(uploadsToday, 'size');
-
-    //     if ((totalSizeToday + file.size) > Number(UPLOAD_LIMIT)) {
-    //         fs.unlinkSync(file.path);
-
-    //         throw new ValidationError('Exceeded daily upload limit. Please try again tomorrow.');
-    //     }
-
-    //     return true;
-    // }
 }
 
 module.exports = new FileService;

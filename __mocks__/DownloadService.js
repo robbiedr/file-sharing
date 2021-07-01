@@ -4,7 +4,7 @@ require('dotenv').config();
 const DailyLimitValidator = require('src/validators/DailyLimitValidator.js');
 
 function _getDownloadsToday() {
-    console.log('mock downloadstoday');
+    console.log('['+ new Date() + '] ' + 'mock downloadstoday');
 
     return [
         { size: 0.2, createdAt: new Date(), ipAddress: '0.0.0.0' },

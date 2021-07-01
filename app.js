@@ -31,10 +31,10 @@ app.get('/healthcheck', (req, res, next) => {
 app.use('/files', FilesRouter);
 
 app.listen(PORT, () => {
-    console.log('Listening to port ' + PORT);
+    console.log('['+ new Date() + '] ' + 'Listening to port ' + PORT);
 
     cron.schedule(CHECK_INACTIVITY_INTERVAL, async () => {
-        console.log(`Checking for inactive files...`);
+        console.log('['+ new Date() + '] ' + `Checking for inactive files...`);
         FileCheckerService.deleteInactiveFiles();
     });
 });

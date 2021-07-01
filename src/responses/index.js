@@ -12,7 +12,7 @@ const ValidationError = require('src/responses/ValidationError');
  * @param {object} data Additional Data
  */
 function respond(res, data) {
-  console.log(`[${data.status}] [${data.constructor.name}] ${data.message}`);
+  console.log('['+ new Date() + '] ' + `[${data.status}] [${data.constructor.name}] ${data.message}`);
   res.status(data.status).send(data);
 }
 

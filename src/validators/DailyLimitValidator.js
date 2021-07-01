@@ -44,10 +44,7 @@ function checkIfWithinLimit(limit, value) {
  */
 function validateFile(file, actions, limit) {
     const totalSize = computeTotalSize(actions);
-    console.log('totalSize', totalSize);
-    console.log('limit', limit);
     const valid = checkIfWithinLimit(limit, (totalSize + file.size));
-    console.log('valid', valid);
 
     if (!valid) {
         return false;
